@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendador de Géneros Literarios</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://source.unsplash.com/1600x900/?books,library') no-repeat center center fixed;
+            background-size: cover;
+            color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .pantalla-inicio {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1s ease-in-out;
+        }
+        .pantalla-inicio h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #8b5a2b;
+        }
+        .pantalla-inicio p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #4a4a4a;
+        }
+        .boton-inicio {
+            background: #8b5a2b;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 90, 43, 0.4);
+        }
+        .boton-inicio:hover {
+            background: #6b4420;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(107, 68, 32, 0.6);
+        }
+        .seccion-recomendaciones {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .seccion-recomendaciones h2 {
+            font-size: 2rem;
+            color: #8b5a2b;
+            margin-bottom: 20px;
+        }
+
+        .seccion-recomendaciones p {
+            font-size: 1.1rem;
+            color: #4a4a4a;
+            margin-bottom: 20px;
+        }
+
+        .seccion-recomendaciones .boton-pregunta {
+            background: #8b5a2b;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 90, 43, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .seccion-recomendaciones .boton-pregunta:hover {
+            background: #6b4420;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(107, 68, 32, 0.6);
+        }
+
+        .seccion-recomendaciones .opciones-botones {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .seccion-recomendaciones .boton-opcion {
+            background: #8b5a2b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 90, 43, 0.4);
+        }
+
+        .seccion-recomendaciones .boton-opcion:hover {
+            background: #6b4420;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(107, 68, 32, 0.6);
+        }
+
+        .seccion-recomendaciones .mensaje-no {
+            color: #8b5a2b;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .seccion-recomendaciones .boton-elegir-otro-genero {
+            background: #8b5a2b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 90, 43, 0.4);
+            margin-top: 20px;
+        }
+
+        .seccion-recomendaciones .boton-elegir-otro-genero:hover {
+            background: #6b4420;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(107, 68, 32, 0.6);
+        }
+
+        .libro-item {
+            background: #f9f9f9;
+            color: #4a4a4a;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 10px auto;
+        }
+
+        .libro-item:hover {
+            background: #e0e0e0;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+
+        #formulario-edad, #formulario-idioma {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 50%;
+            max-width: 600px;
+            color: #2c3e50;
+            text-align: center;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        #formulario-edad h2, #formulario-idioma h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #8b5a2b;
+        }
+        #formulario-edad label, #formulario-idioma label {
+            display: block;
+            margin: 15px 0 5px;
+            font-size: 1.1rem;
+            color: #4a4a4a;
+        }
+        #formulario-edad input, #formulario-idioma select {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        }
+        #formulario-edad button, #formulario-idioma button {
+            background: #8b5a2b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        #formulario-edad button:hover, #formulario-idioma button:hover {
+            background: #6b4420;
+        }
+        #contenedor {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 800px;
+            color: #2c3e50;
+            text-align: center;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        #contenedor h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #8b5a2b;
+        }
+        #contenedor p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #4a4a4a;
+        }
+        .opcion {
+            display: block;
+            margin: 15px auto;
+            padding: 15px 25px;
+            background: #8b5a2b;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 80%;
+            max-width: 300px;
+            box-shadow: 0 5px 15px rgba(139, 90, 43, 0.4);
+        }
+        .opcion:hover {
+            background: #6b4420;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(107, 68, 32, 0.6);
+        }
+        .reiniciar {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #8b5a2b;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 90, 43, 0.4);
+        }
+        .reiniciar:hover {
+            background: #6b4420;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(107, 68, 32, 0.6);
+        }
+        #lista-recomendaciones {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        #lista-recomendaciones li {
+            background: #f9f9f9;
+            color: #4a4a4a;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        #lista-recomendaciones li:hover {
+            background: #e0e0e0;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        #lista-recomendaciones img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        #modal-libro {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+            width: 80%;
+            max-width: 500px;
+        }
+        #modal-libro h3 {
+            font-size: 1.5rem;
+            color: #8b5a2b;
+            margin-bottom: 15px;
+        }
+        #modal-libro p {
+            font-size: 1rem;
+            color: #4a4a4a;
+            margin-bottom: 20px;
+        }
+        #modal-libro button {
+            background: #8b5a2b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        #modal-libro button:hover {
+            background: #6b4420;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .pregunta-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pregunta-texto {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5B3A1A; /* Color marrón similar a los títulos */
+            margin-bottom: 10px;
+        }
+
+        .opciones-botones {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .boton-opcion {
+            background-color: #8B5E3C; /* Marrón cálido */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 16px;
+        }
+
+        .boton-opcion:hover {
+            background-color: #6B4228;
+        }
+
+        .mensaje-no {
+            color: #8B5E3C;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .mensaje-no-recomendaciones {
+    color: #8B5E3C;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 1.2rem;
+}
+
+.libro-item {
+    background-color: #F8F1EB; /* Fondo suave */
+    color: #5B3A1A;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.libro-item:hover {
+    background-color: #E8D8C4;
+}
+
+        .libro-item {
+            background-color: #F8F1EB; /* Fondo suave */
+            color: #5B3A1A;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .libro-item:hover {
+            background-color: #E8D8C4;
+        }
+    </style>
+</head>
+<body>
+    <div class="pantalla-inicio" id="pantalla-inicio">
+        <h1>Bienvenido al Recomendador de Géneros Literarios y libros</h1>
+        <p>Descubre qué género literario es ideal y que libro es ideal para ti según tus preferencias. Responde unas preguntas sencillas y te guiaremos a tu mejor elección.</p>
+        <button class="boton-inicio" onclick="mostrarFormularioEdad()">Comenzar</button>
+    </div>
+    
+    <!-- Formulario para edad -->
+    <div id="formulario-edad">
+        <h2>¿Cuál es tu edad?</h2>
+        <label for="edad">Edad:</label>
+        <input type="number" id="edad" placeholder="Ej: 25">
+        <button onclick="guardarEdad()">Continuar</button>
+    </div>
+    
+    <!-- Formulario para idioma -->
+    <div id="formulario-idioma">
+        <h2>¿Qué idioma prefieres?</h2>
+        <label for="idioma">Idioma:</label>
+        <select id="idioma">
+            <option value="español">Español</option>
+            <option value="inglés">Inglés</option>
+        </select>
+        <button onclick="guardarIdioma()">Continuar</button>
+    </div>
+    
+    <div id="contenedor">
+        <h2 id="pregunta"></h2>
+        <p id="descripcion"></p>
+        <ul id="lista-recomendaciones"></ul>
+        <div id="opciones"></div>
+        <button class="reiniciar" id="boton-reiniciar" onclick="reiniciarRecomendador()">Elegir otro género</button>
+    </div>
+    
+    <!-- Modal para mostrar el libro -->
+    <div id="modal-libro">
+        <img id="imagen-libro" src="" alt="Portada del libro" style="max-width: 200px; margin-bottom: 20px;">
+        <h3 id="titulo-libro"></h3>
+        <p id="descripcion-libro"></p>
+        <button id="boton-sinopsis" onclick="mostrarSinopsis()">Ver sinopsis</button>
+        <p id="sinopsis-libro" style="display: none;"></p>
+        <button onclick="cerrarModal()">Cerrar</button>
+    </div>
+    
+    <script>
+        let datosUsuario = {
+            edad: null,
+            idioma: null
+        };
+    
+        function mostrarFormularioEdad() {
+            document.getElementById("pantalla-inicio").style.display = "none";
+            document.getElementById("formulario-edad").style.display = "block";
+        }
+    
+        function guardarEdad() {
+            const edad = parseInt(document.getElementById("edad").value);
+            if (isNaN(edad) || edad < 0 || edad > 120) {
+                alert("Por favor, ingresa una edad válida (entre 0 y 120 años).");
+                return;
+            }
+            datosUsuario.edad = edad;
+            document.getElementById("formulario-edad").style.display = "none";
+            document.getElementById("formulario-idioma").style.display = "block";
+        }
+    
+        function guardarIdioma() {
+            const idioma = document.getElementById("idioma").value;
+            datosUsuario.idioma = idioma;
+            document.getElementById("formulario-idioma").style.display = "none";
+            document.getElementById("contenedor").style.display = "block";
+            mostrarPregunta("inicio");
+        }
+    
+        const recomendacionesGenero = {
+            "romance_clasico": {
+                "descripcion": "<strong>Romance Clásico</strong><br>- <strong>Recomendación:</strong><br>  - Novela romántica de época<br>  - Realismo romántico<br>  - Romance gótico<br>  - Romance filosófico o existencialista",
+                "opciones": [
+                    "Novela romántica de época",
+                    "Realismo romántico",
+                    "Romance gótico",
+                    "Romance filosófico o existencialista"
+                ]
+            },
+            "romance_contemporaneo": {
+                "descripcion": "<strong>Romance Contemporáneo</strong><br>- <strong>Recomendación:</strong><br>  - Romance realista<br>  - Literatura para chicas<br>  - Romance juvenil (Young Adult - YA)<br>  - Romance nuevo adulto<br>  - Romance y drama<br>  - Romance con toques de fantasía o ciencia ficción",
+                "opciones": [
+                    "Romance realista",
+                    "Literatura para chicas",
+                    "Romance juvenil (Young Adult - YA)",
+                    "Romance nuevo adulto",
+                    "Romance y drama",
+                    "Romance con toques de fantasía o ciencia ficción"
+                ]
+            },
+            
+            "historia_ficcion": {
+                "descripcion": "<strong>Ficción Histórica</strong><br>- <strong>Recomendación:</strong><br>  - Novelas sobre eventos históricos<br>  - Historias de personajes reales con elementos ficticios<br>  - Novela histórica de guerra<br>  - Novela histórica de aventuras",
+                "opciones": [
+                    "Novelas sobre eventos históricos",
+                    "Historias de personajes reales con elementos ficticios",
+                    "Novela histórica de guerra",
+                    "Novela histórica de aventuras"
+                ]
+            },
+            "historia_real": {
+                "descripcion": "<strong>Historia Real</strong><br>- <strong>Recomendación:</strong><br>  - Biografías y memorias<br>  - Historia de civilizaciones<br>  - Historia militar<br>  - Historia política y social",
+                "opciones": [
+                    "Biografías y memorias",
+                    "Historia de civilizaciones",
+                    "Historia militar",
+                    "Historia política y social"
+                ]
+            },
+            "mundos_futuristas": {
+                "descripcion": "<strong>Mundos Futuristas</strong><br>- <strong>Recomendación:</strong><br>  - Ópera espacial<br>  - Utopías y distopías<br>  - Ciberpunk y biopunk<br>  - Colonización espacial",
+                "opciones": [
+                    "Ópera espacial",
+                    "Utopías y distopías",
+                    "Ciberpunk y biopunk",
+                    "Colonización espacial"
+                ]
+            },
+            "avances_cientificos": {
+                "descripcion": "<strong>Avances Científicos</strong><br>- <strong>Recomendación:</strong><br>  - Ciencia<br>  - Distopías<br>  - Tecnologías avanzadas y sus impactos",
+                "opciones": [
+                    "Ciencia",
+                    "Distopías",
+                    "Tecnologías avanzadas y sus impactos"
+                ]
+            },
+            "comedia_romantica": {
+                "descripcion": "<strong>Comedia Romántica</strong><br>- <strong>Recomendación:</strong><br>  - Literatura para chicas<br>  - Historias ligeras de amor y humor<br>  - Relaciones amorosas con enredos cómicos",
+                "opciones": [
+                    "Literatura para chicas",
+                    "Historias ligeras de amor y humor",
+                    "Relaciones amorosas con enredos cómicos"
+                ]
+            },
+            "satira_social": {
+                "descripcion": "<strong>Sátira Social</strong><br>- <strong>Recomendación:</strong><br>  - Novelas con humor negro<br>  - Críticas sociales disfrazadas de comedia<br>  - Literatura de humor absurdo",
+                "opciones": [
+                    "Novelas con humor negro",
+                    "Críticas sociales disfrazadas de comedia",
+                    "Literatura de humor absurdo"
+                ]
+            },
+            "terror_psicologico": {
+                "descripcion": "<strong>Terror Psicológico</strong><br>- <strong>Recomendación:</strong><br>  - Thriller psicológico<br>  - Terror basado en la mente humana y el miedo interno<br>  - Misterios perturbadores",
+                "opciones": [
+                    "Thriller psicológico",
+                    "Terror basado en la mente humana y el miedo interno",
+                    "Misterios perturbadores"
+                ]
+            },
+            "terror_sobrenatural": {
+                "descripcion": "<strong>Terror Sobrenatural</strong><br>- <strong>Recomendación:</strong><br>  - Terror con fantasmas, demonios y entidades<br>  - Criaturas monstruosas<br>  - Leyendas urbanas y mitos",
+                "opciones": [
+                    "Terror con fantasmas, demonios y entidades",
+                    "Criaturas monstruosas",
+                    "Leyendas urbanas y mitos"
+                ]
+            },
+            "fantasia_mundos": {
+                "descripcion": "<strong>Mundos Originales</strong><br>- <strong>Recomendación:</strong><br>  - Fantasía urbana<br>  - Realismo mágico<br>  - Fantasía mitológica<br>  - Fantasía oscura",
+                "opciones": [
+                    "Fantasía urbana",
+                    "Realismo mágico",
+                    "Fantasía mitológica",
+                    "Fantasía oscura"
+                ]
+            },
+            "fantasia_medieval": {
+                "descripcion": "<strong>Magia Medieval</strong><br>- <strong>Recomendación:</strong><br>  - Fantasía épica<br>  - Alta fantasía con héroes y batallas<br>  - Magia y caballería",
+                "opciones": [
+                    "Fantasía épica",
+                    "Alta fantasía con héroes y batallas",
+                    "Magia y caballería"
+                ]
+            }
+        };
+    
+        const librosRecomendados = {
+            "Novela romántica de época": {
+                "titulo": "Orgullo y Prejuicio",
+                "descripcion": "Una novela clásica de Jane Austen que explora las complejidades del amor y el matrimonio en la Inglaterra del siglo XIX.",
+                "sinopsis": "La historia sigue a Elizabeth Bennet, una joven inteligente y de fuerte carácter, mientras navega por las presiones sociales y familiares para encontrar un matrimonio adecuado. A lo largo de la novela, Elizabeth y su familia enfrentan desafíos sociales y emocionales, mientras ella lucha por mantener su independencia y encontrar un amor verdadero. La obra es una crítica social y una exploración profunda de las relaciones humanas.",
+                "edad_minima": 13,
+                "imagen": "https://m.media-amazon.com/images/I/71Q1tPupKjL._AC_UF1000,1000_QL80_.jpg"
+            },
+            "Realismo romántico": {
+                "titulo": "Cumbres Borrascosas",
+                "descripcion": "Una obra maestra de Emily Brontë que combina romance y drama en un entorno gótico.",
+                "sinopsis": "La historia de amor tempestuosa entre Heathcliff y Catherine en los páramos de Yorkshire. La novela explora temas como la venganza, la obsesión y el amor no correspondido, mientras los personajes luchan contra sus propios demonios internos y las circunstancias que los rodean. Es una obra oscura y apasionada que ha dejado una huella imborrable en la literatura universal.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/content?id=tYAjkDJ-56oC&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U0j_C7c75biTgUWZxdSnPhitV0_xw&w=1280"
+            },
+            "Romance gótico": {
+                "titulo": "Jane Eyre",
+                "descripcion": "Una novela de Charlotte Brontë que combina romance, misterio y elementos góticos.",
+                "sinopsis": "Jane Eyre, una joven huérfana, encuentra trabajo como institutriz en la mansión Thornfield, donde descubre secretos oscuros. A medida que se desarrolla su relación con el misterioso señor Rochester, Jane debe enfrentarse a desafíos morales y emocionales. La novela es una exploración profunda de la independencia femenina, la moralidad y el amor verdadero.",
+                "edad_minima": 14,
+                "imagen": "https://books.google.com.co/books/content?id=Er5X8w9qfdwC&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U0arOxkFQnIzXohabjSUq_0jT9BkA&w=1280"
+            },
+            "Romance filosófico o existencialista": {
+                "titulo": "El amor en los tiempos del cólera",
+                "descripcion": "Una novela de Gabriel García Márquez que explora el amor a lo largo de varias décadas.",
+                "sinopsis": "La historia de Florentino Ariza y Fermina Daza, cuyo amor perdura a pesar del tiempo y las circunstancias. Florentino espera más de cincuenta años para reencontrarse con Fermina, y durante ese tiempo, ambos viven vidas separadas llenas de pasión, dolor y reflexión. La novela es una exploración profunda del amor, el tiempo y la condición humana.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=WzNjBgAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2qS1Ll5W72FED78A-St187vRNL1w&w=1280"
+            },
+            "Romance realista": {
+                "titulo": "Eleanor & Park",
+                "descripcion": "Una historia de amor juvenil que explora temas de identidad, familia y primeros amores.",
+                "sinopsis": "Eleanor y Park, dos adolescentes marginados, encuentran consuelo y amor el uno en el otro en esta conmovedora novela de Rainbow Rowell. A medida que su relación se desarrolla, ambos deben enfrentarse a desafíos personales y familiares, mientras descubren el poder del amor y la amistad. La novela es un retrato honesto y emocional de la adolescencia.",
+                "edad_minima": 14,
+                "imagen": "https://m.media-amazon.com/images/I/71U1LtBqgeS._SY522_.jpg"
+            },
+            "Literatura para chicas": {
+                "titulo": "El Diario de Bridget Jones",
+                "descripcion": "Una comedia romántica que sigue las desventuras amorosas de Bridget Jones.",
+                "sinopsis": "Bridget Jones, una mujer soltera de treinta y tantos años, decide llevar un diario para mejorar su vida. A lo largo de la novela, Bridget enfrenta una serie de situaciones cómicas y embarazosas mientras busca el amor y la felicidad. La obra es una crítica social divertida y una exploración de las presiones que enfrentan las mujeres en la sociedad moderna.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=zZfRAQAAQBAJ&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U09LpqfA5etHDklpe9ZvcqcIVnI1w&w=1280"
+            },
+            "Romance juvenil (Young Adult - YA)": {
+                "titulo": "Bajo la misma estrella",
+                "descripcion": "Una novela de John Green que narra la historia de amor entre dos adolescentes con cáncer.",
+                "sinopsis": "Hazel y Gus se conocen en un grupo de apoyo y desarrollan una relación profunda mientras enfrentan sus enfermedades. A medida que su amor crece, ambos deben lidiar con la realidad de sus condiciones y el impacto que tienen en sus vidas y en las de quienes los rodean. La novela es una exploración conmovedora del amor, la pérdida y la resiliencia.",
+                "edad_minima": 14,
+                "imagen": "https://books.google.com.co/books/content?id=cvnINtLUcLMC&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3s0POOStS8qVH_7HJy9IyvPYAjgQ&w=1280"
+            },
+            "Romance nuevo adulto": {
+                "titulo": "Beautiful Disaster",
+                "descripcion": "Una historia de amor intensa y dramática entre dos jóvenes universitarios.",
+                "sinopsis": "Abby y Travis se ven envueltos en una relación tumultuosa llena de pasión y conflictos. A medida que su relación se desarrolla, ambos deben enfrentarse a sus propios demonios internos y a las consecuencias de sus acciones. La novela es una exploración intensa del amor, la obsesión y la redención.",
+                "edad_minima": 18,
+                "imagen": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQVN66Qef2I_Aua5Kvyuqmo5ZGhlBv8ulbx0Z2C-RW97yeImk2W"
+            },
+            "Romance y drama": {
+                "titulo": "Lo que el viento se llevó",
+                "descripcion": "Una novela clásica de Margaret Mitchell que combina romance y drama en el contexto de la Guerra Civil estadounidense.",
+                "sinopsis": "La historia de Scarlett O'Hara y su lucha por sobrevivir y prosperar en medio de la guerra y el amor no correspondido. Scarlett es una mujer fuerte y determinada que debe enfrentarse a desafíos personales y sociales mientras busca el amor y la seguridad. La novela es un retrato épico de la resistencia humana y las complejidades del amor.",
+                "edad_minima": 16,
+                "imagen": "https://www.penguinlibros.com/co/1670245/lo-que-el-viento-se-llevo.jpg"
+            },
+            "Romance con toques de fantasía o ciencia ficción": {
+                "titulo": "Crepúsculo",
+                "descripcion": "Una novela de Stephenie Meyer que combina romance y elementos sobrenaturales.",
+                "sinopsis": "Bella Swan se enamora de Edward Cullen, un vampiro, en una historia llena de romance y peligro. A medida que su relación se desarrolla, Bella debe enfrentarse a los desafíos de amar a un ser inmortal y a las amenazas que rodean su mundo. La novela es una exploración del amor prohibido y la lucha entre el bien y el mal.",
+                "edad_minima": 14,
+                "imagen": "https://franmt7.com/wp-content/uploads/2021/03/1-crepusculo-1.jpg?w=795"
+            },
+            "Novelas sobre eventos históricos": {
+                "titulo": "Los pilares de la Tierra",
+                "descripcion": "Una novela histórica de Ken Follett que narra la construcción de una catedral en la Inglaterra medieval.",
+                "sinopsis": "La historia sigue a varios personajes cuyas vidas se entrelazan en torno a la construcción de la catedral de Kingsbridge. A lo largo de la novela, los personajes enfrentan desafíos políticos, religiosos y personales mientras luchan por alcanzar sus sueños. La obra es un retrato épico de la ambición, la fe y la perseverancia.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/content?id=mKoInmOU130C&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U1WfRBQQ9xTywAUvPKrBrNE1HYMRg&w=1280"
+            },
+            "Historias de personajes reales con elementos ficticios": {
+                "titulo": "El código Da Vinci",
+                "descripcion": "Una novela de Dan Brown que combina historia, misterio y ficción.",
+                "sinopsis": "Robert Langdon descubre un secreto oculto en las obras de Leonardo Da Vinci que podría cambiar la historia del cristianismo. A medida que Langdon y su compañera Sophie Neveu siguen las pistas, se ven envueltos en una conspiración que los lleva a través de Europa. La novela es un thriller lleno de giros inesperados y revelaciones impactantes.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/content?id=gsKBOJla_fQC&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U1cRFxbsrb4Yjip2S2NE1iX2LLIcg&w=1280"
+            },
+            "Novela histórica de guerra": {
+                "titulo": "Sin novedad en el frente",
+                "descripcion": "Una novela de Erich Maria Remarque que retrata los horrores de la Primera Guerra Mundial.",
+                "sinopsis": "Paul Bäumer, un joven soldado alemán, describe las atrocidades de la guerra y su impacto en los soldados. A medida que Paul y sus compañeros luchan por sobrevivir, deben enfrentarse a la brutalidad de la guerra y la pérdida de su humanidad. La novela es una crítica poderosa de la guerra y sus consecuencias.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=UVCYBQAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3AiBVyzSQFJW1-tU2fc4cvfkkNYg&w=1280"
+            },
+            "Novela histórica de aventuras": {
+                "titulo": "El conde de Montecristo",
+                "descripcion": "Una novela de Alexandre Dumas que combina historia, venganza y aventura.",
+                "sinopsis": "Edmond Dantés, injustamente encarcelado, escapa y se convierte en el Conde de Montecristo para vengarse de quienes lo traicionaron. A lo largo de la novela, Edmond utiliza su inteligencia y recursos para llevar a cabo su venganza, mientras explora temas como la justicia, la redención y el poder. La obra es un clásico de la literatura de aventuras.",
+                "edad_minima": 14,
+                "imagen": "https://books.google.com.co/books/content?id=xNcbaWPXjVIC&pg=PA3&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U0BTTWPbEQwtkc5tO83npqPRBeB9g&w=1025"
+            },
+            "Biografías y memorias": {
+                "titulo": "Steve Jobs",
+                "descripcion": "La biografía autorizada de Steve Jobs, escrita por Walter Isaacson.",
+                "sinopsis": "Este libro ofrece una mirada íntima a la vida y carrera del cofundador de Apple, explorando su genio, sus obsesiones y su impacto en la tecnología. A través de entrevistas con Jobs y quienes lo conocieron, Isaacson presenta un retrato completo de un hombre complejo y visionario. La biografía es una exploración fascinante de la innovación y el liderazgo.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/content?id=ZNf9gNsA72MC&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3WgixtS7j0jz_srTXAsTLc8UyhZw&w=1280"
+            },
+            "Historia de civilizaciones": {
+                "titulo": "Sapiens: De animales a dioses",
+                "descripcion": "Una obra de Yuval Noah Harari que explora la historia de la humanidad.",
+                "sinopsis": "El libro narra la evolución de la especie humana desde sus orígenes hasta la actualidad. Harari explora cómo los humanos han llegado a dominar el planeta y cómo nuestras creencias, culturas y tecnologías han dado forma al mundo moderno. La obra es una reflexión profunda sobre la naturaleza humana y nuestro lugar en el universo.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=qmj7AwAAQBAJ&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3InHRqC6NlvoY5ejUoXgGGLHP3mQ&w=1280"
+            },
+            "Historia militar": {
+                "titulo": "La Segunda Guerra Mundial",
+                "descripcion": "Una obra de Antony Beevor que detalla los eventos clave de la Segunda Guerra Mundial.",
+                "sinopsis": "El libro ofrece una visión completa de los conflictos, estrategias y consecuencias de la guerra. Beevor combina narrativa histórica con análisis detallado para presentar un retrato vívido de uno de los eventos más importantes del siglo XX. La obra es una lectura esencial para entender el impacto global de la guerra.",
+                "edad_minima": 18,
+                "imagen": "https://editorialelateneo.com.ar/productos/temp/La_Segunda_Guerra_Mundial.png"
+            },
+            "Historia política y social": {
+                "titulo": "1984",
+                "descripcion": "Una novela distópica de George Orwell que critica los regímenes totalitarios.",
+                "sinopsis": "Winston Smith vive en un mundo controlado por el Gran Hermano, donde la libertad individual no existe. A medida que Winston intenta rebelarse contra el sistema, descubre la verdadera naturaleza del poder y la opresión. La novela es una advertencia poderosa sobre los peligros del totalitarismo y la pérdida de la libertad.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=dPmXEAAAQBAJ&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3cKqyfqIvAYdEwSWkPwWo8sLR4Ig&w=1280"
+            },
+            "Ópera espacial": {
+                "titulo": "Dune",
+                "descripcion": "Una épica de ciencia ficción que combina política, religión y ecología en un futuro distante.",
+                "sinopsis": "En el planeta desértico de Arrakis, el joven Paul Atreides se convierte en una figura clave en la lucha por el control de la especia, el recurso más valioso del universo. A medida que Paul asume su destino, debe enfrentarse a desafíos políticos, religiosos y personales. La novela es una exploración profunda del poder, la fe y la supervivencia.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/content?id=2ClNyY6oG84C&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U1HElfm4tAmoyn6WT5QslaW949uQw&w=1280"
+            },
+            "Utopías y distopías": {
+                "titulo": "Un mundo feliz",
+                "descripcion": "Una novela distópica de Aldous Huxley que critica la sociedad futurista.",
+                "sinopsis": "En un mundo donde la felicidad es artificial, Bernard Marx cuestiona el sistema y busca la verdadera libertad. A medida que Bernard descubre la verdad detrás de la sociedad, debe enfrentarse a las consecuencias de sus acciones. La novela es una crítica poderosa de la tecnología, el control social y la pérdida de la humanidad.",
+                "edad_minima": 16,
+                "imagen": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcR7gWjWHIC4XqBWFjYIekBEmAtI0iZZwzDj1bAMzwtSoQ3SCviT"
+            },
+            "Ciberpunk y biopunk": {
+                "titulo": "Neuromante",
+                "descripcion": "Una novela de William Gibson que define el género ciberpunk.",
+                "sinopsis": "Case, un hacker, es contratado para una misión peligrosa en el ciberespacio. A medida que Case se adentra en el mundo virtual, descubre una conspiración que podría cambiar el destino de la humanidad. La novela es una exploración fascinante de la tecnología, la identidad y el poder.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=0251EAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3sJYSgzKZJjd_FE3D2P55ThKLHWQ&w=1280"
+            },
+            "Colonización espacial": {
+                "titulo": "El problema de los tres cuerpos",
+                "descripcion": "Una novela de ciencia ficción de Liu Cixin que explora la colonización espacial y la física teórica.",
+                "sinopsis": "La humanidad se enfrenta a una civilización alienígena mientras intenta colonizar el espacio. A medida que los científicos y líderes mundiales luchan por entender y enfrentar la amenaza, deben tomar decisiones que podrían cambiar el destino de la humanidad. La novela es una exploración profunda de la ciencia, la política y la supervivencia.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=ib_UDAAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3bDsizT2hBLjRqobR_nS0j3joshA&w=1280"
+            },
+            "Ciencia": {
+                "titulo": "Breves respuestas a las grandes preguntas",
+                "descripcion": "Una obra de Stephen Hawking que aborda preguntas fundamentales sobre el universo.",
+                "sinopsis": "Hawking explora temas como el origen del universo, los agujeros negros y la inteligencia artificial. A través de un lenguaje accesible, Hawking presenta conceptos complejos de manera clara y fascinante. La obra es una reflexión profunda sobre el lugar de la humanidad en el cosmos.",
+                "edad_minima": 14,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=a2N0DwAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U1CgWsDWnL2jNiPZvZvH191ZJfXJA&w=1280"
+            },
+            "Distopías": {
+                "titulo": "Fahrenheit 451",
+                "descripcion": "Una novela de Ray Bradbury que critica la censura y la sociedad distópica.",
+                "sinopsis": "En un mundo donde los libros están prohibidos, Guy Montag, un bombero, comienza a cuestionar su papel en la sociedad. A medida que Montag descubre el poder de la literatura, debe enfrentarse a las consecuencias de sus acciones. La novela es una advertencia poderosa sobre los peligros de la censura y la pérdida del conocimiento.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/content?id=r4YfNJDGx2AC&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2dXudUpzfHfJyaAZDNNAGvPvbxvw&w=1280"
+            },
+            "Tecnologías avanzadas y sus impactos": {
+                "titulo": "Yo, robot",
+                "descripcion": "Una colección de cuentos de Isaac Asimov que exploran la ética de la inteligencia artificial.",
+                "sinopsis": "Los cuentos presentan dilemas morales y filosóficos relacionados con la convivencia entre humanos y robots. A través de historias fascinantes, Asimov explora cómo la tecnología puede afectar la sociedad y la humanidad. La obra es una reflexión profunda sobre el futuro de la inteligencia artificial.",
+                "edad_minima": 14,
+                "imagen": "https://www.yumpu.com/es/image/facebook/1995212.jpg"
+            },
+            "Literatura para chicas": {
+                "titulo": "El Diario de Bridget Jones",
+                "descripcion": "Una comedia romántica que sigue las desventuras amorosas de Bridget Jones.",
+                "sinopsis": "Bridget Jones, una mujer soltera de treinta y tantos años, decide llevar un diario para mejorar su vida. A lo largo de la novela, Bridget enfrenta una serie de situaciones cómicas y embarazosas mientras busca el amor y la felicidad. La obra es una crítica social divertida y una exploración de las presiones que enfrentan las mujeres en la sociedad moderna.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=zZfRAQAAQBAJ&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U09LpqfA5etHDklpe9ZvcqcIVnI1w&w=1280"
+            },
+            "Historias ligeras de amor y humor": {
+                "titulo": "Confesiones de una shopaholic",
+                "descripcion": "Una novela de Sophie Kinsella que combina romance y comedia.",
+                "sinopsis": "Becky Bloomwood, una adicta a las compras, intenta equilibrar su vida amorosa y financiera. A medida que Becky enfrenta sus deudas y problemas personales, descubre el verdadero valor del amor y la amistad. La novela es una comedia ligera y entretenida que aborda temas como el consumismo y la autoaceptación.",
+                "edad_minima": 16,
+                "imagen": "https://images.cdn2.buscalibre.com/fit-in/520x520/5c/cc/6f93745f91e7e051d580ed5f6d434213.jpg"
+            },
+            "Relaciones amorosas con enredos cómicos": {
+                "titulo": "Algo prestado",
+                "descripcion": "Una novela de Emily Giffin que explora las complejidades del amor y la amistad.",
+                "sinopsis": "Rachel se enamora del prometido de su mejor amiga, lo que desencadena una serie de enredos cómicos. A medida que Rachel intenta navegar por sus sentimientos y lealtades, descubre que el amor no siempre sigue las reglas. La novela es una exploración honesta y divertida de las relaciones humanas.",
+                "edad_minima": 16,
+                "imagen": "https://images.cdn3.buscalibre.com/fit-in/360x360/9e/cb/9ecbc6b8e87e38abf218adbce46a5412.jpg"
+            },
+            "Novelas con humor negro": {
+                "titulo": "American Psycho",
+                "descripcion": "Una novela de Bret Easton Ellis que combina sátira y horror.",
+                "sinopsis": "Patrick Bateman, un ejecutivo de Wall Street, lleva una doble vida como asesino en serie. A medida que Bateman se hunde en la locura, la novela explora temas como la superficialidad, la obsesión y la violencia. La obra es una crítica mordaz de la sociedad consumista y la pérdida de la humanidad.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=yarMDwAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2yuiQpiyk_QiQGnCSYMPXkHIQhRw&w=1280"
+            },
+            "Críticas sociales disfrazadas de comedia": {
+                "titulo": "Rebelión en la granja",
+                "descripcion": "Una novela de George Orwell que critica el totalitarismo a través de una fábula.",
+                "sinopsis": "Los animales de una granja se rebelan contra los humanos, pero terminan creando un sistema opresivo. A medida que los animales luchan por la igualdad, descubren que el poder corrompe. La novela es una crítica poderosa de los regímenes totalitarios y la naturaleza humana.",
+                "edad_minima": 14,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=AmwTEQAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U1LcmniDudNoAodaS7n0sUZQIsjag&w=1280"
+            },
+            "Literatura de humor absurdo": {
+                "titulo": "Guía del autoestopista galáctico",
+                "descripcion": "Una novela de Douglas Adams que combina ciencia ficción y humor absurdo.",
+                "sinopsis": "Arthur Dent viaja por el universo después de que la Tierra es destruida para construir una autopista interestelar. A medida que Arthur se encuentra con una serie de personajes excéntricos y situaciones absurdas, descubre que el universo es mucho más extraño de lo que imaginaba. La novela es una comedia inteligente y surrealista.",
+                "edad_minima": 14,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=2GacDQAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2QRowTKu-6amzmoBthQegNvTfmEw&w=1280"
+            },
+            "Thriller psicológico": {
+                "titulo": "El Silencio de los Corderos",
+                "descripcion": "Un thriller psicológico que sigue a la agente del FBI Clarice Starling mientras persigue a un asesino en serie.",
+                "sinopsis": "Clarice debe enfrentarse a sus propios miedos mientras intenta capturar a Buffalo Bill, un asesino que despelleja a sus víctimas. A medida que Clarice se adentra en la mente del asesino, descubre secretos oscuros sobre sí misma. La novela es un thriller intenso y psicológicamente complejo.",
+                "edad_minima": 18,
+                "imagen": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTWeiKGkcAfdYUe7Gl5DVZEr022Tq2Dq46T_o2OssLKX3uHOgzg"
+            },
+            "Terror basado en la mente humana y el miedo interno": {
+                "titulo": "El resplandor",
+                "descripcion": "Una novela de Stephen King que explora el terror psicológico.",
+                "sinopsis": "Jack Torrance, un escritor, se convierte en el cuidador de un hotel aislado, donde su mente comienza a desmoronarse. A medida que Jack se hunde en la locura, su familia debe luchar por sobrevivir. La novela es una exploración profunda del miedo, la locura y la violencia.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/content?id=-chAB7NNa-QC&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U1cukjET1fJLVBvv-G96P0YdLzVUQ&w=1280"
+            },
+            "Misterios perturbadores": {
+                "titulo": "Gone Girl",
+                "descripcion": "Un thriller psicológico de Gillian Flynn que explora los secretos oscuros de una pareja.",
+                "sinopsis": "Nick Dunne se convierte en el principal sospechoso cuando su esposa Amy desaparece en circunstancias misteriosas. A medida que Nick intenta demostrar su inocencia, descubre que Amy no es quien él creía. La novela es un thriller lleno de giros inesperados y revelaciones impactantes.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/content?id=1wBZCrJvHXIC&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3VXBXlt1KukqmA85OguUYAE_7jgQ&w=1280"
+            },
+            "Terror con fantasmas, demonios y entidades": {
+                "titulo": "El Exorcista",
+                "descripcion": "Una novela de terror que explora la posesión demoníaca y la lucha entre el bien y el mal.",
+                "sinopsis": "Una madre desesperada busca la ayuda de dos sacerdotes para salvar a su hija de una entidad demoníaca que la posee. A medida que los sacerdotes luchan contra el demonio, descubren que el mal es más poderoso de lo que imaginaban. La novela es un clásico del terror que explora temas como la fe, el miedo y la redención.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=L72aBgAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U12Pz2RP6WngxBzgGzDwO6qF8dc7Q&w=1280"
+            },
+            "Criaturas monstruosas": {
+                "titulo": "Drácula",
+                "descripcion": "Una novela de Bram Stoker que introduce al famoso vampiro Conde Drácula.",
+                "sinopsis": "Jonathan Harker viaja a Transilvania para reunirse con el misterioso Conde Drácula, pero pronto descubre su verdadera naturaleza. A medida que Drácula se traslada a Inglaterra, un grupo de personas debe unirse para detenerlo. La novela es un clásico del terror que ha influido en generaciones de escritores.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=ffkAAgAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3jo6zFPjO0M1B3RAnGbvQSgeBsWg&w=1280"
+            },
+            "Leyendas urbanas y mitos": {
+                "titulo": "It",
+                "descripcion": "Una novela de Stephen King que combina terror y leyendas urbanas.",
+                "sinopsis": "Un grupo de niños se enfrenta a una entidad malévola que toma la forma de sus peores miedos. A medida que los niños crecen, deben regresar a su ciudad natal para enfrentarse a la entidad una vez más. La novela es una exploración profunda del miedo, la amistad y la resiliencia.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/content?id=HK-gnkponNIC&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U1z34O1LK4-jri1yjjJBpWSL0iRZw&w=1280"
+            },
+            "Fantasía urbana": {
+                "titulo": "Cazadores de Sombras: Ciudad de Hueso",
+                "descripcion": "Una novela de Cassandra Clare que combina fantasía y elementos urbanos.",
+                "sinopsis": "Clary Fray descubre un mundo oculto de cazadores de sombras, demonios y ángeles en la ciudad de Nueva York. A medida que Clary se adentra en este mundo, descubre secretos sobre su pasado y su destino. La novela es una exploración emocionante de la fantasía y la aventura.",
+                "edad_minima": 14,
+                "imagen": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcToU2RA4-kYexGhhFBZlX6H8XZAmDIYKGSFbf9XQOVmJVwS0qlj"
+            },
+            "Realismo mágico": {
+                "titulo": "Cien años de soledad",
+                "descripcion": "Una novela de Gabriel García Márquez que combina realidad y magia.",
+                "sinopsis": "La historia de la familia Buendía a lo largo de varias generaciones en el pueblo ficticio de Macondo. A medida que los personajes viven sus vidas, el pueblo se convierte en un microcosmos de la historia y la cultura latinoamericana. La novela es una obra maestra del realismo mágico.",
+                "edad_minima": 16,
+                "imagen": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcR-_qFlRxa5Ozof4LnQb6m3QZYNCh4JRxa2Xc0cCMwVn_3Sdyry"
+            },
+            "Fantasía mitológica": {
+                "titulo": "American Gods",
+                "descripcion": "Una novela de Neil Gaiman que combina fantasía y mitología.",
+                "sinopsis": "Shadow Moon se ve envuelto en una guerra entre los viejos dioses y los nuevos dioses de la América moderna. A medida que Shadow descubre su papel en el conflicto, debe enfrentarse a desafíos personales y divinos. La novela es una exploración fascinante de la mitología y la identidad.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/content?id=oj336L3tVcAC&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U3YwJrVjy7TU6Rr8D95Yu92kpPLpg&w=1280"
+            },
+            "Fantasía oscura": {
+                "titulo": "El nombre del viento",
+                "descripcion": "Una novela de Patrick Rothfuss que combina fantasía épica y elementos oscuros.",
+                "sinopsis": "Kvothe, un hombre legendario, narra su historia de ascenso y caída en un mundo lleno de magia y misterio. A medida que Kvothe cuenta su historia, descubrimos los secretos de su pasado y su lucha por sobrevivir en un mundo peligroso. La novela es una exploración profunda de la magia, la música y la redención.",
+                "edad_minima": 16,
+                "imagen": "https://books.google.com.co/books/content?id=QeYF9kTMypgC&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2PhANOvj7JJ2z3EpNVj6Girn-Ccg&w=1280"
+            },
+            "Fantasía épica": {
+                "titulo": "El Señor de los Anillos",
+                "descripcion": "Una obra maestra de J.R.R. Tolkien que sigue la lucha por destruir un anillo malévolo.",
+                "sinopsis": "Frodo Bolsón y sus compañeros emprenden una peligrosa misión para destruir el Anillo Único y derrotar al Señor Oscuro Sauron. A medida que el grupo viaja a través de la Tierra Media, deben enfrentarse a desafíos físicos y emocionales. La novela es una exploración épica de la amistad, el coraje y la lucha entre el bien y el mal.",
+                "edad_minima": 14,
+                "imagen": "https://books.google.com.co/books/content?id=q_P7oMO3lC4C&pg=PA1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U0iLz58z0JLyBxZXU6FgjMNmEV2tg&w=1280"
+            },
+            "Alta fantasía con héroes y batallas": {
+                "titulo": "Canción de hielo y fuego",
+                "descripcion": "Una serie de George R.R. Martin que combina política, intriga y fantasía épica.",
+                "sinopsis": "Varias familias nobles luchan por el control del Trono de Hierro en un mundo lleno de magia y traición. A medida que los personajes luchan por el poder, deben enfrentarse a desafíos personales y políticos. La serie es una exploración profunda de la ambición, el poder y la moralidad.",
+                "edad_minima": 18,
+                "imagen": "https://books.google.com.co/books/publisher/content?id=-c02AwAAQBAJ&pg=PP1&img=1&zoom=3&hl=en&bul=1&sig=ACfU3U2gtq494nclQEcnsnxKiHP0IzARRg&w=1280"
+            },
+            "Magia y caballería": {
+                "titulo": "La espada de la verdad",
+                "descripcion": "Una serie de Terry Goodkind que combina magia, aventuras y caballería.",
+                "sinopsis": "Richard Cypher, un joven guardabosques, descubre que es el elegido para salvar el mundo de la tiranía. A medida que Richard asume su destino, debe enfrentarse a desafíos personales y mágicos. La serie es una exploración emocionante de la magia, la justicia y la redención.",
+                "edad_minima": 16,
+                "imagen": "https://www.planetadelibros.com/usuaris/libros/thumbs/9e56fae2-4821-4c57-aabe-71535cbc0117/d_1200_1200/portada_la-espada-de-la-verdad-n-0217-la-piedra-de-las-lagrimas_terry-goodkind_202310021220.webp"
+            }
+        };
+    
+        const preguntas = {
+            "inicio": {
+                "pregunta": "¿Qué género prefieres?",
+                "descripcion": "Elige el tipo de literatura que más te gusta.",
+                "opciones": {
+                    "Romance": "romance",
+                    "Historia": "historia",
+                    "Ciencia Ficción": "ciencia_ficcion",
+                    "Terror": "terror",
+                    "Fantasía": "fantasia"
+                }
+            },
+            "romance": {
+                "pregunta": "¿Prefieres historias clásicas o contemporáneas?",
+                "opciones": {
+                    "Romance Clásico": "romance_clasico",
+                    "Romance Contemporáneo": "romance_contemporaneo"
+                }
+            },
+            "historia": {
+                "pregunta": "¿Prefieres ficción histórica o libros de historia real?",
+                "opciones": {
+                    "Ficción Histórica": "historia_ficcion",
+                    "Historia Real": "historia_real"
+                }
+            },
+            "ciencia_ficcion": {
+                "pregunta": "¿Qué tipo de ciencia ficción prefieres?",
+                "opciones": {
+                    "Mundos Futuristas": "mundos_futuristas",
+                    "Avances Científicos": "avances_cientificos"
+                }
+            },
+            "terror": {
+                "pregunta": "¿Prefieres terror psicológico o terror sobrenatural?",
+                "opciones": {
+                    "Terror Psicológico": "terror_psicologico",
+                    "Terror Sobrenatural": "terror_sobrenatural"
+                }
+            },
+            "fantasia": {
+                "pregunta": "¿Qué tipo de fantasía prefieres?",
+                "opciones": {
+                    "Mundos Originales": "fantasia_mundos",
+                    "Magia Medieval": "fantasia_medieval"
+                }
+            }
+        };
+    
+        function mostrarPregunta(id) {
+            let preguntaObj = preguntas[id];
+            if (!preguntaObj) return;
+    
+            document.getElementById("pregunta").innerText = preguntaObj.pregunta;
+            document.getElementById("descripcion").innerHTML = preguntaObj.descripcion || "";
+            document.getElementById("lista-recomendaciones").innerHTML = "";
+            document.getElementById("boton-reiniciar").style.display = preguntaObj.opciones ? "none" : "block";
+    
+            let opcionesDiv = document.getElementById("opciones");
+            opcionesDiv.innerHTML = "";
+    
+            if (preguntaObj.opciones) {
+                for (let opcion in preguntaObj.opciones) {
+                    let btn = document.createElement("button");
+                    btn.className = "opcion";
+                    btn.innerText = opcion;
+                    btn.onclick = function() { 
+                        let siguientePregunta = preguntaObj.opciones[opcion];
+                        if (recomendacionesGenero[siguientePregunta]) {
+                            mostrarRecomendaciones(siguientePregunta);
+                        } else {
+                            mostrarPregunta(siguientePregunta);
+                        }
+                    };
+                    opcionesDiv.appendChild(btn);
+                }
+            } else if (recomendacionesGenero[id]) {
+                document.getElementById("descripcion").innerHTML = recomendacionesGenero[id].descripcion;
+                mostrarRecomendaciones(id);
+            }
+        }
+        function mostrarRecomendaciones(id) {
+            let recomendacion = recomendacionesGenero[id];
+            if (!recomendacion) return;
+
+            // Crear la sección de recomendaciones
+            let seccionRecomendaciones = document.createElement("div");
+            seccionRecomendaciones.className = "seccion-recomendaciones";
+
+            // Título de la sección
+            let titulo = document.createElement("h2");
+            titulo.innerText = "Recomendaciones";
+            seccionRecomendaciones.appendChild(titulo);
+
+            // Descripción de la recomendación
+            let descripcion = document.createElement("p");
+            descripcion.innerHTML = recomendacion.descripcion;
+            seccionRecomendaciones.appendChild(descripcion);
+
+            // Botón de pregunta
+            let preguntaBtn = document.createElement("button");
+            preguntaBtn.innerText = "¿Deseas la recomendación de un libro?";
+            preguntaBtn.className = "boton-pregunta";
+            seccionRecomendaciones.appendChild(preguntaBtn);
+
+            // Opciones de Sí y No
+            let opcionesDiv = document.createElement("div");
+            opcionesDiv.className = "opciones-botones";
+
+            let btnSi = document.createElement("button");
+            btnSi.innerText = "Sí";
+            btnSi.className = "boton-opcion";
+            btnSi.onclick = function() {
+                mostrarLibrosRecomendados(id);
+            };
+
+            let btnNo = document.createElement("button");
+            btnNo.innerText = "No";
+            btnNo.className = "boton-opcion";
+            btnNo.onclick = function() {
+                seccionRecomendaciones.innerHTML += "<p class='mensaje-no'>No se mostrará ninguna recomendación.</p>";
+            };
+
+            opcionesDiv.appendChild(btnSi);
+            opcionesDiv.appendChild(btnNo);
+            seccionRecomendaciones.appendChild(opcionesDiv);
+
+            // Botón para elegir otro género
+            let botonElegirOtroGenero = document.createElement("button");
+            botonElegirOtroGenero.innerText = "Deseas elegir otro género";
+            botonElegirOtroGenero.className = "boton-elegir-otro-genero";
+            botonElegirOtroGenero.onclick = function() {
+                mostrarPreguntaElegirOtroGenero(seccionRecomendaciones);
+            };
+            seccionRecomendaciones.appendChild(botonElegirOtroGenero);
+
+            // Limpiar y mostrar la sección de recomendaciones
+            document.getElementById("lista-recomendaciones").innerHTML = "";
+            document.getElementById("lista-recomendaciones").appendChild(seccionRecomendaciones);
+        }
+
+        function mostrarLibrosRecomendados(id) {
+            let recomendacion = recomendacionesGenero[id];
+            if (!recomendacion) return;
+
+            let listaRecomendaciones = document.getElementById("lista-recomendaciones");
+            listaRecomendaciones.innerHTML = ""; // Limpiar antes de agregar nuevas recomendaciones
+
+            let hayRecomendaciones = false;
+
+            recomendacion.opciones.forEach(opcion => {
+                let libro = librosRecomendados[opcion];
+                if (libro && datosUsuario.edad >= libro.edad_minima) {
+                    hayRecomendaciones = true;
+                    let li = document.createElement("li");
+                    li.className = "libro-item";
+                    li.innerText = libro.titulo;
+                    li.onclick = function() { mostrarLibro(opcion); };
+                    listaRecomendaciones.appendChild(li);
+                }
+            });
+
+            // Mostrar mensaje si no hay recomendaciones
+            if (!hayRecomendaciones) {
+                let mensaje = document.createElement("p");
+                mensaje.className = "mensaje-no";
+                mensaje.innerText = "No hay recomendaciones para tu edad.";
+                listaRecomendaciones.appendChild(mensaje);
+            }
+        }
+
+        function mostrarPreguntaElegirOtroGenero(seccionRecomendaciones) {
+            // Crear la pregunta y los botones de Sí y No
+            let preguntaDiv = document.createElement("div");
+            preguntaDiv.className = "pregunta-elegir-otro-genero";
+
+            let preguntaTexto = document.createElement("p");
+            preguntaTexto.innerText = "¿Deseas elegir otro género?";
+            preguntaTexto.style.fontWeight = "bold";
+            preguntaTexto.style.marginBottom = "10px";
+            preguntaDiv.appendChild(preguntaTexto);
+
+            let opcionesDiv = document.createElement("div");
+            opcionesDiv.className = "opciones-botones";
+
+            let btnSi = document.createElement("button");
+            btnSi.innerText = "Sí";
+            btnSi.className = "boton-opcion";
+            btnSi.onclick = function() {
+                mostrarPregunta("inicio");
+            };
+
+            let btnNo = document.createElement("button");
+            btnNo.innerText = "No";
+            btnNo.className = "boton-opcion";
+            btnNo.onclick = function() {
+                preguntaDiv.remove(); // Eliminar la pregunta si el usuario elige "No"
+            };
+
+            opcionesDiv.appendChild(btnSi);
+            opcionesDiv.appendChild(btnNo);
+            preguntaDiv.appendChild(opcionesDiv);
+
+            // Agregar la pregunta a la sección de recomendaciones
+            seccionRecomendaciones.appendChild(preguntaDiv);
+        }
+
+    function mostrarLibrosRecomendados(id) {
+    let recomendacion = recomendacionesGenero[id];
+    if (!recomendacion) return;
+
+    let listaRecomendaciones = document.getElementById("lista-recomendaciones");
+    listaRecomendaciones.innerHTML = ""; // Limpiar antes de agregar nuevas recomendaciones
+
+    let hayRecomendaciones = false;
+
+    recomendacion.opciones.forEach(opcion => {
+        let libro = librosRecomendados[opcion];
+        if (libro && datosUsuario.edad >= libro.edad_minima) {
+            hayRecomendaciones = true;
+            let li = document.createElement("li");
+            li.className = "libro-item";
+            li.innerText = libro.titulo;
+            li.onclick = function() { mostrarLibro(opcion); };
+            listaRecomendaciones.appendChild(li);
+        }
+    });
+
+    // Mostrar mensaje si no hay recomendaciones
+    if (!hayRecomendaciones) {
+        let mensaje = document.createElement("p");
+        mensaje.className = "mensaje-no-recomendaciones";
+        mensaje.innerText = "No hay recomendaciones para ti.";
+        listaRecomendaciones.appendChild(mensaje);
+    }
+}
+
+function mostrarLibrosRecomendados(id) {
+    let recomendacion = recomendacionesGenero[id];
+    if (!recomendacion) return;
+
+    let listaRecomendaciones = document.getElementById("lista-recomendaciones");
+    listaRecomendaciones.innerHTML = ""; // Limpiar antes de agregar nuevas recomendaciones
+
+    recomendacion.opciones.forEach(opcion => {
+        let libro = librosRecomendados[opcion];
+        if (libro && datosUsuario.edad >= libro.edad_minima) {
+            let li = document.createElement("li");
+            li.innerText = opcion;
+            li.onclick = function() { mostrarLibro(opcion); };
+            listaRecomendaciones.appendChild(li);
+        }
+    });
+}
+
+    
+        function mostrarLibro(opcion) {
+            let libro = librosRecomendados[opcion];
+            if (libro) {
+                document.getElementById("imagen-libro").src = libro.imagen;
+                document.getElementById("titulo-libro").innerText = libro.titulo;
+                document.getElementById("descripcion-libro").innerText = libro.descripcion;
+                document.getElementById("sinopsis-libro").innerText = libro.sinopsis;
+                document.getElementById("sinopsis-libro").style.display = "none";
+                document.getElementById("boton-sinopsis").style.display = "block";
+                document.getElementById("modal-libro").style.display = "block";
+            }
+        }
+    
+        function mostrarSinopsis() {
+            document.getElementById("sinopsis-libro").style.display = "block";
+            document.getElementById("boton-sinopsis").style.display = "none";
+        }
+    
+        function cerrarModal() {
+            document.getElementById("modal-libro").style.display = "none";
+            document.getElementById("sinopsis-libro").style.display = "none";
+            document.getElementById("boton-sinopsis").style.display = "block";
+        }
+    
+        function reiniciarRecomendador() {
+            document.getElementById("contenedor").style.display = "none";
+            document.getElementById("pantalla-inicio").style.display = "flex";
+        }
+    </script>
+    </body>
+    </html>
